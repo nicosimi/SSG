@@ -24,7 +24,7 @@ class TestLeafnode(unittest.TestCase):
         self.assertEqual(node.to_html(), "<blockquote>Hello, world!</blockquote>") 
 
     def test_leaf_to_html_img(self):
-        node = LeafNode("img", "Description of image",{"src":"url/of/image.jpg"})
+        node = LeafNode("img", "Description of image",{"src":"url/of/image.jpg", "alt": "Description of image"})
         self.assertEqual(node.to_html(), "<img src=\"url/of/image.jpg\" alt=\"Description of image\" />")
 
     def test_leaf_to_html_a(self):
