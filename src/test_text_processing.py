@@ -1,7 +1,9 @@
 import unittest
-from text_processing import text_node_to_html_node
 from textnode import TextNode
 from textnode import TextType
+from text_processing import text_node_to_html_node
+from text_processing import split_nodes_delimiter
+from text_processing import extract_markdown_images
 
 class TestText_Processing(unittest.TestCase):
     def test_plain_text(self):
@@ -47,3 +49,19 @@ class TestText_Processing(unittest.TestCase):
         self.assertEqual(html_node.value, "")
         self.assertEqual(html_node.props,props)
 
+    def test_split_nodes_delimiter(self):
+        test_node = TextNode("This is text with a **bolded phrase** in the middle ",TextType.TEXT)
+        new_nodes = split_nodes_delimiter([test_node],"**", TextType.BOLD_TEXT)
+        self.assertEqual(len(new_nodes), 3)
+        self.assertEqual(new_nodes[0].text_type, TextType.TEXT)
+        self.assertEqual(new_nodes[0].text, "This is text with a ")
+        self.assertEqual(new_nodes[1].text_type, TextType.BOLD_TEXT)
+        self.assertEqual(new_nodes[1].text, "bolded phrase")
+        self.assertEqual(new_nodes[2].text_type, TextType.TEXT)
+        self.assertEqual(new_nodes[2].text, " in the middle ")
+
+    def test_extract_images_links(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        #print(extract_markdown_images(text))
+        # [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+        self.assertEqual(extract_markdown_images(text),[("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")])
