@@ -1,9 +1,7 @@
 import unittest
 from textnode import TextNode
 from textnode import TextType
-from text_processing import text_node_to_html_node
-from text_processing import split_nodes_delimiter
-from text_processing import extract_markdown_images
+from text_processing import extract_markdown_images,extract_markdown_links, text_node_to_html_node, split_nodes_delimiter
 
 class TestText_Processing(unittest.TestCase):
     def test_plain_text(self):
@@ -63,5 +61,11 @@ class TestText_Processing(unittest.TestCase):
     def test_extract_images_links(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
         #print(extract_markdown_images(text))
-        # [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+        #[("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
         self.assertEqual(extract_markdown_images(text),[("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")])
+
+    def test_extract_links_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        #print(extract_markdown_links(text))
+        #[("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        self.assertListEqual(extract_markdown_links(text),[("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")])

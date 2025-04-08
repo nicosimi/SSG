@@ -70,4 +70,12 @@ def extract_markdown_images(text: str):
     return res
 
 def extract_markdown_links(text:str):
-    pass
+    matches = re.findall(r"\[\w.*?\]\(\w.*?\)", text)
+    res = []
+    for match in matches:
+        aux = match.split("]")
+        aux[0] = aux[0].strip(("["))
+        aux[1] = aux[1].strip("(").strip(")")
+        aux_tuple=(tuple(aux))
+        res.append(aux_tuple)
+    return res
