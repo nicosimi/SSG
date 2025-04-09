@@ -26,3 +26,6 @@ class TextNode():
 
     def get_text(self):
         return self.text
+
+    def get_text_type(self):
+        return self.text_type

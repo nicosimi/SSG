@@ -46,10 +46,13 @@ def split_nodes_delimiter_textnode_transformer(sections_list, delimiter, text_ty
     return res
 
 
-def split_nodes_delimiter(old_nodes, delimiter, text_type):
+def split_nodes_delimiter(old_nodes:list[TextNode], delimiter, text_type:TextType):
     new_nodes = []
     if len(old_nodes) < 1: return new_nodes
     for node in old_nodes:
+        if node.get_text_type() is not TextType.TEXT:
+            new_nodes.append(node)
+            continue
         text = node.get_text()
         if (text.count(delimiter) % 2 != 0): raise ValueError("delimiter is not closed")
         sections = text.split(delimiter)
@@ -84,6 +87,9 @@ def split_nodes_image(nodes: list[TextNode]):
     res = []
     if len(nodes) < 1: return res
     for text_node in nodes:
+        if text_node.get_text_type() is not TextType.TEXT:
+            res.append(text_node)
+            continue
         text = text_node.get_text()
         image_links = extract_markdown_images(text)
         for aux_link_tuple in image_links:
@@ -98,6 +104,9 @@ def split_nodes_link(nodes: list[TextNode]):
     res = []
     if len(nodes) < 1: return res
     for text_node in nodes:
+        if text_node.get_text_type() is not TextType.TEXT:
+            res.append(text_node)
+            continue 
         text = text_node.get_text()
         image_links = extract_markdown_links(text)
         for aux_link_tuple in image_links:
@@ -107,3 +116,12 @@ def split_nodes_link(nodes: list[TextNode]):
             text = text_sections[1]
         if len(text) > 0: res.append(TextNode(text, TextType.TEXT))
     return res
+
+def text_to_textnodes(text: str):
+    base_node = TextNode(text,TextType.TEXT)
+    text_node_list = split_nodes_delimiter([base_node],"**", TextType.BOLD_TEXT)
+    text_node_list = split_nodes_delimiter(text_node_list,"_", TextType.ITALIC_TEXT)
+    text_node_list = split_nodes_delimiter(text_node_list,"`", TextType.CODE_TEXT)
+    text_node_list = split_nodes_image(text_node_list)
+    text_node_list = split_nodes_link(text_node_list)
+    return text_node_list
