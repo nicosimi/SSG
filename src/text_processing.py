@@ -21,10 +21,10 @@ def text_node_to_html_node(text_node:TextNode):
             }
             return LeafNode("a",text_node.text,props)
         case TextType.IMAGE_TEXT:
-            if text_node.src is None:
+            if text_node.url is None:
                 raise ValueError("image url can`t be null")
             props = {}
-            props["src"] = text_node.src
+            props["src"] = text_node.url
             props["alt"] = text_node.text
             return LeafNode("img", "",props)
         case _:
@@ -78,4 +78,32 @@ def extract_markdown_links(text:str):
         aux[1] = aux[1].strip("(").strip(")")
         aux_tuple=(tuple(aux))
         res.append(aux_tuple)
+    return res
+
+def split_nodes_image(nodes: list[TextNode]):
+    res = []
+    if len(nodes) < 1: return res
+    for text_node in nodes:
+        text = text_node.get_text()
+        image_links = extract_markdown_images(text)
+        for aux_link_tuple in image_links:
+            text_sections = text.split(f"![{aux_link_tuple[0]}]({aux_link_tuple[1]})",1)
+            if len(text_sections[0])>0: res.append(TextNode(text_sections[0],TextType.TEXT))
+            res.append(TextNode(aux_link_tuple[0],TextType.IMAGE_TEXT,aux_link_tuple[1]))
+            text = text_sections[1]
+        if len(text) > 0: res.append(TextNode(text, TextType.TEXT))
+    return res
+
+def split_nodes_link(nodes: list[TextNode]):
+    res = []
+    if len(nodes) < 1: return res
+    for text_node in nodes:
+        text = text_node.get_text()
+        image_links = extract_markdown_links(text)
+        for aux_link_tuple in image_links:
+            text_sections = text.split(f"[{aux_link_tuple[0]}]({aux_link_tuple[1]})",1)
+            if len(text_sections[0]) > 0: res.append(TextNode(text_sections[0],TextType.TEXT))
+            res.append(TextNode(aux_link_tuple[0],TextType.LINK_TEXT,aux_link_tuple[1]))
+            text = text_sections[1]
+        if len(text) > 0: res.append(TextNode(text, TextType.TEXT))
     return res
