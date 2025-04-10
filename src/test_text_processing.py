@@ -48,6 +48,25 @@ class TestText_Processing(unittest.TestCase):
         self.assertEqual(html_node.value, "")
         self.assertEqual(html_node.props,props)
 
+
+    def test_text_to_textnode(self):
+        test_text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = text_to_textnodes(test_text)
+        #print(nodes)
+        self.assertListEqual( [
+        TextNode("This is ", TextType.TEXT),
+        TextNode("text", TextType.BOLD_TEXT),
+        TextNode(" with an ", TextType.TEXT),
+        TextNode("italic", TextType.ITALIC_TEXT),
+        TextNode(" word and a ", TextType.TEXT),
+        TextNode("code block", TextType.CODE_TEXT),
+        TextNode(" and an ", TextType.TEXT),
+        TextNode("obi wan image", TextType.IMAGE_TEXT, "https://i.imgur.com/fJRm4Vk.jpeg"),
+        TextNode(" and a ", TextType.TEXT),
+        TextNode("link", TextType.LINK_TEXT, "https://boot.dev"),
+        ],nodes)
+
+class Test_split_functions(unittest.TestCase):
     def test_split_nodes_delimiter(self):
         test_node = TextNode("This is text with a **bolded phrase** in the middle ",TextType.TEXT)
         new_nodes = split_nodes_delimiter([test_node],"**", TextType.BOLD_TEXT)
@@ -90,6 +109,19 @@ class TestText_Processing(unittest.TestCase):
             new_nodes,
         )
 
+    def test_split_images_adjacent_images(self):
+        node = TextNode(
+        "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)![second image](https://i.imgur.com/3elNhQu.png)",
+        TextType.TEXT)
+        new_nodes = split_nodes_image([node])
+
+        test_list = [
+            TextNode("This is text with an ", TextType.TEXT),
+            TextNode("image", TextType.IMAGE_TEXT, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode("second image", TextType.IMAGE_TEXT, "https://i.imgur.com/3elNhQu.png")
+        ]
+        self.assertListEqual(test_list, new_nodes)
+
     def test_split_links(self):
         node = TextNode(
         "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
@@ -106,20 +138,44 @@ class TestText_Processing(unittest.TestCase):
             ],
             new_nodes
         )
+    
+    def test_split_links_adjacent_links(self):
+        node = TextNode(
+        "This is text with a link [to boot dev](https://www.boot.dev)[to youtube](https://www.youtube.com/@bootdotdev)",
+        TextType.TEXT,
+        )   
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual([
+        TextNode("This is text with a link ", TextType.TEXT),
+        TextNode("to boot dev", TextType.LINK_TEXT, "https://www.boot.dev"),
+        TextNode("to youtube", TextType.LINK_TEXT, "https://www.youtube.com/@bootdotdev")
+        ],new_nodes)
 
-    def test_text_to_textnode(self):
-        test_text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-        nodes = text_to_textnodes(test_text)
-        #print(nodes)
-        self.assertListEqual( [
-        TextNode("This is ", TextType.TEXT),
-        TextNode("text", TextType.BOLD_TEXT),
-        TextNode(" with an ", TextType.TEXT),
-        TextNode("italic", TextType.ITALIC_TEXT),
-        TextNode(" word and a ", TextType.TEXT),
-        TextNode("code block", TextType.CODE_TEXT),
-        TextNode(" and an ", TextType.TEXT),
-        TextNode("obi wan image", TextType.IMAGE_TEXT, "https://i.imgur.com/fJRm4Vk.jpeg"),
-        TextNode(" and a ", TextType.TEXT),
-        TextNode("link", TextType.LINK_TEXT, "https://boot.dev"),
-        ],nodes)
+    def test_split_links_plain_text(self):
+        node = TextNode(
+        "This is text",
+        TextType.TEXT,
+        )   
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual([
+        TextNode("This is text", TextType.TEXT),
+        ],new_nodes)
+    
+    def test_split_links_empty_text(self):
+        node = TextNode(
+        "",
+        TextType.TEXT,
+        )   
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual([
+        ],new_nodes)
+
+    def test_split_links_null_list(self):
+        new_nodes = split_nodes_link(None)
+        self.assertListEqual([
+        ],new_nodes)
+
+    def test_split_links_list_null_nodes(self):
+        new_nodes = split_nodes_link([None])
+        self.assertListEqual( []
+        , new_nodes)

@@ -85,8 +85,10 @@ def extract_markdown_links(text:str):
 
 def split_nodes_image(nodes: list[TextNode]):
     res = []
+    if nodes is None: return res
     if len(nodes) < 1: return res
     for text_node in nodes:
+        if text_node is None: continue
         if text_node.get_text_type() is not TextType.TEXT:
             res.append(text_node)
             continue
@@ -102,8 +104,10 @@ def split_nodes_image(nodes: list[TextNode]):
 
 def split_nodes_link(nodes: list[TextNode]):
     res = []
+    if nodes is None: return res
     if len(nodes) < 1: return res
     for text_node in nodes:
+        if text_node is None: continue
         if text_node.get_text_type() is not TextType.TEXT:
             res.append(text_node)
             continue 
