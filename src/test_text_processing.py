@@ -65,6 +65,39 @@ class TestText_Processing(unittest.TestCase):
         TextNode(" and a ", TextType.TEXT),
         TextNode("link", TextType.LINK_TEXT, "https://boot.dev"),
         ],nodes)
+    
+    def test_text_to_textnode_reverse_order(self):
+        test_text = "[link](https://boot.dev)This is ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) with an `code block` word and a _italic_ and an  and a **text**"
+        nodes = text_to_textnodes(test_text)
+        #print(nodes)
+        self.assertListEqual( [
+        TextNode("link", TextType.LINK_TEXT, "https://boot.dev"),
+        TextNode("This is ", TextType.TEXT),
+        TextNode("obi wan image", TextType.IMAGE_TEXT, "https://i.imgur.com/fJRm4Vk.jpeg"),
+        TextNode(" with an ", TextType.TEXT),
+        TextNode("code block", TextType.CODE_TEXT),
+        TextNode(" word and a ", TextType.TEXT),
+        TextNode("italic", TextType.ITALIC_TEXT),
+        TextNode(" and an  and a ", TextType.TEXT),
+        TextNode("text", TextType.BOLD_TEXT),
+        ],nodes)
+
+    def test_text_to_textnode_empty_text(self):
+        test_text = "This a text for testing"
+        nodes = text_to_textnodes(test_text)
+        self.assertListEqual([
+            TextNode("This a text for testing", TextType.TEXT),
+        ], nodes)
+
+    def test_text_to_textnode_empty_text(self):
+        test_text = ""
+        nodes = text_to_textnodes(test_text)
+        self.assertListEqual([], nodes)
+    
+    def test_text_to_textnode_null(self):
+        test_text = None
+        nodes = text_to_textnodes(test_text)
+        self.assertListEqual([], nodes)
 
 class Test_split_functions(unittest.TestCase):
     def test_split_nodes_delimiter(self):

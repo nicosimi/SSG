@@ -50,6 +50,7 @@ def split_nodes_delimiter(old_nodes:list[TextNode], delimiter, text_type:TextTyp
     new_nodes = []
     if len(old_nodes) < 1: return new_nodes
     for node in old_nodes:
+        if node.get_text() is None: continue
         if node.get_text_type() is not TextType.TEXT:
             new_nodes.append(node)
             continue
