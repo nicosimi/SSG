@@ -1,5 +1,5 @@
 import unittest
-from markdown_processing import markdown_to_blocks
+from markdown_processing import BlockType, block_to_blocktype, markdown_to_blocks
 
 class Test_markdown_to_blocks(unittest.TestCase):
     def test_markdown_to_blocks_1(self):
@@ -78,3 +78,43 @@ This is a paragraph of text.
         self.assertListEqual([
             "This is a paragraph of text.",
             "This is a paragraph of text."], blocks)
+
+class Test_block_to_blocktype(unittest.TestCase):
+    def test_paragraph(self):
+        text = "this is text"
+        self.assertEqual(block_to_blocktype(text), BlockType.PARAGRAPH)
+
+    def test_code(self):
+        text = "```this is code```"
+        self.assertEqual(block_to_blocktype(text), BlockType.CODE)
+    
+    def test_heading(self):
+        text = "##this is heading"
+        self.assertEqual(block_to_blocktype(text), BlockType.HEADING)
+
+    def test_quote(self):
+        text = ">this is quote"
+        self.assertEqual(block_to_blocktype(text), BlockType.QUOTE)
+
+    def test_quote_multiline(self):
+        text= """>this is quote
+        >this is also quote"""
+        self.assertEqual(block_to_blocktype(text), BlockType.QUOTE)
+    
+    def test_unordered_list(self):
+        text = "- this is unordered list"
+        self.assertEqual(block_to_blocktype(text), BlockType.UNORDERED_LIST)
+
+    def test_unordered_list_multiline(self):
+        text = """- this is unordered list
+        - this is also unordered list"""
+        self.assertEqual(block_to_blocktype(text), BlockType.UNORDERED_LIST)
+    
+    def test_ordered_list(self):
+        text = "1. this is ordered list"
+        self.assertEqual(block_to_blocktype(text), BlockType.ORDERED_LIST)
+    
+    def test_ordered_list_multiline(self):
+        text = """1. this is ordered list
+        2. this is also ordered list"""
+        self.assertEqual(block_to_blocktype(text), BlockType.ORDERED_LIST)

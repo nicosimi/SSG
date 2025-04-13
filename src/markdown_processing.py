@@ -19,7 +19,7 @@ def markdown_to_blocks(md:str)->list[str]:
     return sections
 
 def is_blocktype(lines:list[str], regex:str, ordered:bool) ->bool:
-    pattern = re.Pattern(regex)
+    pattern = re.compile(regex)
     if ordered:
         i = 1
         for line in lines:
@@ -32,18 +32,18 @@ def is_blocktype(lines:list[str], regex:str, ordered:bool) ->bool:
     return True
 
 def block_to_blocktype(block:str)->BlockType:
-    pattern = re.Pattern("^\#{1,6}")
+    pattern = re.compile(r"^\#{1,6}")
     if pattern.match(block):
         return BlockType.HEADING
-    pattern = re.Pattern("\`{3}")
+    pattern = re.compile(r"\`{3}")
     if pattern.match(block) and pattern.match(block,(len(block)-3)):
         return BlockType.CODE
-    lines = block.split("\n")
-    if is_blocktype(lines, "^\>", False):
+    lines = block.split(r"\n")
+    if is_blocktype(lines, r"^\>", False):
         return BlockType.QUOTE
-    if is_blocktype(lines, "^\- ", False):
+    if is_blocktype(lines, r"^\- ", False):
         return BlockType.UNORDERED_LIST
-    if is_blocktype(lines, "^\d\. ", True):
+    if is_blocktype(lines, r"^\d\. ", True):
         return BlockType.ORDERED_LIST
     return BlockType.PARAGRAPH
     
