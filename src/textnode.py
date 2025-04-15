@@ -29,3 +29,6 @@ class TextNode():
 
     def get_text_type(self):
         return self.text_type
+    
+    def get_url(self):
+        return self.url

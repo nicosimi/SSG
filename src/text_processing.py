@@ -6,27 +6,27 @@ import re ##importing regex module
 def text_node_to_html_node(text_node:TextNode):
     match text_node.text_type:
         case TextType.TEXT:
-            return LeafNode(None,text_node.text)
+            return LeafNode("p",text_node.get_text())
         case TextType.BOLD_TEXT:
-            return LeafNode("b",text_node.text)
+            return LeafNode("b",text_node.get_text())
         case TextType.ITALIC_TEXT:
-            return LeafNode("i", text_node.text)
+            return LeafNode("i", text_node.get_text())
         case TextType.CODE_TEXT:
-            return LeafNode("code",text_node.text)
+            return LeafNode("code",text_node.get_text())
         case TextType.LINK_TEXT:
-            if text_node.url is None:
+            url = text_node.get_url()
+            if url is None:
                 raise ValueError("url can`t be null")
             props = {
-                "href":text_node.url
+                "href":url
             }
-            return LeafNode("a",text_node.text,props)
+            return LeafNode("a",text_node.get_text() ,props)
         case TextType.IMAGE_TEXT:
-            if text_node.url is None:
+            url = text_node.get_url()
+            if url is None:
                 raise ValueError("image url can`t be null")
-            props = {}
-            props["src"] = text_node.url
-            props["alt"] = text_node.text
-            return LeafNode("img", "",props)
+            props = {"src":url}
+            return LeafNode("img", text_node.get_text() ,props)
         case _:
             raise ValueError("invalid text type")
 
@@ -122,7 +122,7 @@ def split_nodes_link(nodes: list[TextNode]):
         if len(text) > 0: res.append(TextNode(text, TextType.TEXT))
     return res
 
-def text_to_textnodes(text: str):
+def text_to_textnodes(text: str)->list[TextNode]:
     base_node = TextNode(text,TextType.TEXT)
     text_node_list = split_nodes_delimiter([base_node],"**", TextType.BOLD_TEXT)
     text_node_list = split_nodes_delimiter(text_node_list,"_", TextType.ITALIC_TEXT)
@@ -130,3 +130,26 @@ def text_to_textnodes(text: str):
     text_node_list = split_nodes_image(text_node_list)
     text_node_list = split_nodes_link(text_node_list)
     return text_node_list
+
+def text_node_to_child_node(node: TextNode)->LeafNode:
+    text = node.get_text()
+    match node.get_text_type():
+        case TextType.LINK_TEXT:
+            tag = "a"
+            props = {"href":node.get_url()}
+        case TextType.IMAGE_TEXT:
+            tag = "img"
+            props = {"src":node.get_url()}
+        case TextType.CODE_TEXT:
+            tag = "code"
+            props = None
+        case TextType.BOLD_TEXT:
+            tag = "b"
+            props = None
+        case TextType.ITALIC_TEXT:
+            tag = "i"
+            props = None
+        case TextType.TEXT:
+            tag = "p"
+            props = None
+    return LeafNode(tag, text, props)

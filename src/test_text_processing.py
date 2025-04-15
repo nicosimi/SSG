@@ -8,7 +8,7 @@ class TestText_Processing(unittest.TestCase):
     def test_plain_text(self):
         node = TextNode("This is a text node", TextType.TEXT)
         html_node = text_node_to_html_node(node)
-        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.tag, "p")
         self.assertEqual(html_node.value, "This is a text node")
     
     def test_bold_text(self):
@@ -40,12 +40,12 @@ class TestText_Processing(unittest.TestCase):
         self.assertEqual(html_node.to_html(),"<a href=\"https://www.google.com\">This is a text node</a>" )
     
     def test_image_text(self):
-        props = {"src":"https://www.google.com", "alt":"This is a text node"}
+        props = {"src":"https://www.google.com"}
         src = "https://www.google.com"
         node = TextNode("This is a text node", TextType.IMAGE_TEXT,src)
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "img")
-        self.assertEqual(html_node.value, "")
+        self.assertEqual(html_node.value, "This is a text node")
         self.assertEqual(html_node.props,props)
 
 

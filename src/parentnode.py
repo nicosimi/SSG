@@ -1,7 +1,8 @@
 from htmlnode import HTMLNode
+from leafnode import LeafNode
 
 class ParentNode(HTMLNode):
-    def __init__(self, tag, children, props = None):
+    def __init__(self, tag, children:list[LeafNode], props = None):
         super().__init__(tag, None, children, props)
 
     def __repr__(self):
