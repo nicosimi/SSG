@@ -1,5 +1,5 @@
 import unittest
-from markdown_processing import BlockType, block_to_blocktype, markdown_to_blocks
+from markdown_processing import BlockType, block_to_blocktype, markdown_to_blocks, markdown_to_html_node
 
 class Test_markdown_to_blocks(unittest.TestCase):
     def test_markdown_to_blocks_1(self):
@@ -118,3 +118,36 @@ class Test_block_to_blocktype(unittest.TestCase):
         text = """1. this is ordered list
         2. this is also ordered list"""
         self.assertEqual(block_to_blocktype(text), BlockType.ORDERED_LIST)
+
+class Test_markdown_to_html_node(unittest.TestCase):
+    def test_codeblock(self):
+        md = """
+```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+        html,
+        "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+    )
+
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+    )

@@ -54,14 +54,16 @@ def block_to_blocktype(block:str)->BlockType:
     return BlockType.PARAGRAPH
 
 def code_block_processing(block: str, children:list[HTMLNode]):
-    node = TextNode(block,TextType.TEXT)
+    refined_block = block.strip("```").lstrip("\n")
+    node = TextNode(refined_block,TextType.TEXT)
     wrapper_list = [text_node_to_html_node(node)]
-    wrapper_node = ParentNode("pre", wrapper_list)
-    children.append(text_node_to_html_node(wrapper_node))
+    wrapper_node = ParentNode("code", wrapper_list)
+    children.append(wrapper_node)
     return None
 
 def simple_block_processing(block:str, children:list[HTMLNode]):    
-    text_nodes = text_to_textnodes(block)
+    refined_block = block.replace("\n"," ")
+    text_nodes = text_to_textnodes(refined_block)
     for node in text_nodes:
         children.append(text_node_to_child_node(node))    
     return None
@@ -82,7 +84,7 @@ def block_to_parent_node(block:str, block_type:BlockType)->ParentNode:    #creat
     tag = ""
     match block_type:
         case BlockType.CODE:
-            tag = "code"
+            tag = "pre"
             code_block_processing(block, children)
         case BlockType.PARAGRAPH | BlockType.HEADING | BlockType.QUOTE:
             if block_type is BlockType.PARAGRAPH: tag = "p"

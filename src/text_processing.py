@@ -6,7 +6,7 @@ import re ##importing regex module
 def text_node_to_html_node(text_node:TextNode):
     match text_node.text_type:
         case TextType.TEXT:
-            return LeafNode("p",text_node.get_text())
+            return LeafNode(None,text_node.get_text())
         case TextType.BOLD_TEXT:
             return LeafNode("b",text_node.get_text())
         case TextType.ITALIC_TEXT:
@@ -150,6 +150,6 @@ def text_node_to_child_node(node: TextNode)->LeafNode:
             tag = "i"
             props = None
         case TextType.TEXT:
-            tag = "p"
+            tag = None
             props = None
     return LeafNode(tag, text, props)
