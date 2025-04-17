@@ -178,3 +178,30 @@ This is another paragraph with _italic_ text and `code` here
             html,
             """<div><blockquote>This is a quote.Visit <a href="https://www.boot.dev">boot.dev</a>.</blockquote></div>"""
         )
+
+    def test_header1(self):
+        md = "# Heading 1"
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><h1>Heading 1</h1></div>"""
+        )
+
+    def test_header6(self):
+        md = "###### Heading 6"
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><h6>Heading 6</h6></div>"""
+        )
+
+    def test_header_inline(self):
+        md = "## Visit [boot.dev](https://www.boot.dev)."
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><h2>Visit <a href="https://www.boot.dev">boot.dev</a>.</h2></div>"""
+        )

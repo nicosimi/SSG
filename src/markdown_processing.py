@@ -96,7 +96,7 @@ def block_to_parent_node(block:str, block_type:BlockType)->ParentNode:    #creat
                 tag = "blockquote"
                 block = block.lstrip(r"\> ")
             if block_type is BlockType.HEADING:
-                hashtag_split = block.split(" ")
+                hashtag_split = block.split(" ",1)
                 tag = "h" + str(hashtag_split[0].count("#"))
                 block = hashtag_split[1]
             simple_block_processing(block, children)
