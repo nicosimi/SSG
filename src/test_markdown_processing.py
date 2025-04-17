@@ -151,3 +151,30 @@ This is another paragraph with _italic_ text and `code` here
             html,
             "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
     )
+
+    def test_blockquote_simple(self):
+        md = "> This is a quote."
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a quote.</blockquote></div>"
+        )
+        
+    def test_blockquote_inline(self):
+        md = "> This is a **bolded** _quote_."
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a <b>bolded</b> <i>quote</i>.</blockquote></div>"
+        )
+
+    def test_blockquote_inline_link(self):
+        md = "> This is a quote.Visit [boot.dev](https://www.boot.dev)."
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><blockquote>This is a quote.Visit <a href="https://www.boot.dev">boot.dev</a>.</blockquote></div>"""
+        )

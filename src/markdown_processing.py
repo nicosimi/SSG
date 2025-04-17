@@ -68,9 +68,13 @@ def simple_block_processing(block:str, children:list[HTMLNode]):
         children.append(text_node_to_child_node(node))    
     return None
 
-def list_block_processing(block:str, children:list[HTMLNode]):
+def list_block_processing(block:str, children:list[HTMLNode], ordered:bool):
     lines = block.split("\n")
     for line in lines:
+        if ordered:
+            line = line.lstrip(r"\d\. ").rstrip("\n")
+        else:
+            line = line.lstrip("-. ").rstrip("\n")
         wrapper_list = []
         pieces = text_to_textnodes(line)
         for piece in pieces:
@@ -88,15 +92,21 @@ def block_to_parent_node(block:str, block_type:BlockType)->ParentNode:    #creat
             code_block_processing(block, children)
         case BlockType.PARAGRAPH | BlockType.HEADING | BlockType.QUOTE:
             if block_type is BlockType.PARAGRAPH: tag = "p"
-            if block_type is BlockType.QUOTE: tag = "blockquote"
+            if block_type is BlockType.QUOTE: 
+                tag = "blockquote"
+                block = block.lstrip(r"\> ")
             if block_type is BlockType.HEADING:
-                hashtag = block.split(" ")[0]
-                tag = "h" + str(hashtag.count("#"))
+                hashtag_split = block.split(" ")
+                tag = "h" + str(hashtag_split[0].count("#"))
+                block = hashtag_split[1]
             simple_block_processing(block, children)
         case BlockType.UNORDERED_LIST | BlockType.ORDERED_LIST:
-            if block_type is BlockType.UNORDERED_LIST: tag = "ul"
-            else: tag = "ol"
-            list_block_processing(block, children)
+            if block_type is BlockType.UNORDERED_LIST: 
+                tag = "ul"
+                list_block_processing(block, children, False) 
+            else: 
+                tag = "ol"
+                list_block_processing(block, children, True)
     return ParentNode(tag,children)
 
 def markdown_to_html_node(doc:str)-> ParentNode:
