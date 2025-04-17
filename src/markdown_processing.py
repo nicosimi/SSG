@@ -72,15 +72,15 @@ def list_block_processing(block:str, children:list[HTMLNode], ordered:bool):
     lines = block.split("\n")
     for line in lines:
         if ordered:
-            line = line.lstrip(r"\d\. ").rstrip("\n")
+            line = line.split(". ",1)[1]
         else:
             line = line.lstrip("-. ").rstrip("\n")
         wrapper_list = []
         pieces = text_to_textnodes(line)
         for piece in pieces:
             wrapper_list.append(text_node_to_child_node(piece))
-            wrapper_node = ParentNode("li", wrapper_list)
-            children.append(wrapper_node)
+        wrapper_node = ParentNode("li", wrapper_list)
+        children.append(wrapper_node)
     return None
 
 def block_to_parent_node(block:str, block_type:BlockType)->ParentNode:    #create html node, assign children to parent
@@ -103,7 +103,7 @@ def block_to_parent_node(block:str, block_type:BlockType)->ParentNode:    #creat
         case BlockType.UNORDERED_LIST | BlockType.ORDERED_LIST:
             if block_type is BlockType.UNORDERED_LIST: 
                 tag = "ul"
-                list_block_processing(block, children, False) 
+                list_block_processing(block, children, False)
             else: 
                 tag = "ol"
                 list_block_processing(block, children, True)

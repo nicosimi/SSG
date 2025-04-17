@@ -205,3 +205,81 @@ This is another paragraph with _italic_ text and `code` here
             html,
             """<div><h2>Visit <a href="https://www.boot.dev">boot.dev</a>.</h2></div>"""
         )
+
+    def test_unordered_list(self):
+        md = """
+- Item 1
+- Item 2
+- Item 3
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul></div>"""
+        )
+
+    def test_unordered_list_inline(self):
+        md = """
+- **bolded**
+- Item 2
+- _italic_
+"""
+        node = markdown_to_html_node(md)
+        #print(node)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><ul><li><b>bolded</b></li><li>Item 2</li><li><i>italic</i></li></ul></div>"""
+        )
+
+    def test_unordered_list_links(self):
+        md = """
+- This is a paragraph with a [link](https://www.google.com).
+"""
+        node = markdown_to_html_node(md)
+        #print(node)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><ul><li>This is a paragraph with a <a href="https://www.google.com">link</a>.</li></ul></div>"""
+        )
+
+    def test_ordered_list(self):
+        md = """
+1. Item 1
+2. Item 2
+3. Item 3
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><ol><li>Item 1</li><li>Item 2</li><li>Item 3</li></ol></div>"""
+        )
+
+    def test_ordered_list_inline(self):
+        md = """
+1. **bolded**
+2. Item 2
+3. _italic_
+"""
+        node = markdown_to_html_node(md)
+        #print(node)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><ol><li><b>bolded</b></li><li>Item 2</li><li><i>italic</i></li></ol></div>"""
+        )
+
+    def test_ordered_list_links(self):
+        md = """
+1. This is a paragraph with a [link](https://www.google.com).
+"""
+        node = markdown_to_html_node(md)
+        #print(node)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            """<div><ol><li>This is a paragraph with a <a href="https://www.google.com">link</a>.</li></ol></div>"""
+        )
